@@ -17,8 +17,8 @@ class TCMSMan:
     Class IPMan is our ancient hero who downloads the ASDO logs for the list of coaches sent to it.
     Using mad python Kung Fu style object programming, together we can overcome the horror that is ASDO!
 
-    Author:     Ben McGuffog, Technical Engineer
-    Version:    2020-Oct
+    Author:     Ben McGuffog, Fleet Support Engineer
+    Version:    2020-Dec
 
     """
 
