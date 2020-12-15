@@ -14,8 +14,8 @@ coachList = []
 
 class TCMSMan:
     """
-    Class IPMan is our ancient hero who downloads the ASDO logs for the list of coaches sent to it.
-    Using mad python Kung Fu style object programming, together we can overcome the horror that is ASDO!
+    Class TCMSMan is our ancient hero who downloads the TCMS logs for the list of coaches sent to it.
+    Using mad python Kung Fu style object programming, together we can overcome the horror that is TCMS!
 
     Author:     Ben McGuffog, Fleet Support Engineer
     Version:    2020-Dec
