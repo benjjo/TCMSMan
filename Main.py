@@ -149,16 +149,16 @@ class TCMSMan:
     @staticmethod
     def writeToLogfile(logString):
         """
-        Writes to a logfile named ASDOMan_logfile.txt.
+        Writes to a logfile named TCMSMan_logfile.txt.
         :param logString:
         :return none:
         """
         try:
-            f = open("ASDOMan_logfile.txt", "a")
+            f = open("TCMSMan_logfile.txt", "a")
             f.write(str(datetime.datetime.utcnow().strftime("%b%d-%H:%M:%S.%f")[:-4]) + " " + logString + "\n")
             f.close()
         except OSError:
-            print("Failed to write to ASDOMan_logfile.txt")
+            print("Failed to write to TCMSMan_logfile.txt")
             pass
 
     @staticmethod
@@ -175,7 +175,7 @@ class TCMSMan:
 
 def main():
     """
-    Instantiates a class object of type IPMan and makes a list of ping-able coaches.
+    Instantiates a class object of type TCMSMan and makes a list of ping-able coaches.
     Using this list, each coach is then sent an SCP protocol to download the logs from the
     root@COACH_IP_ADDRESS:/var/opt/logs folder and save them to the local machine.
     :return:
