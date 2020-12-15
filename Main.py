@@ -14,8 +14,8 @@ coachList = []
 
 class TCMSMan:
     """
-    Class TCMSMan is our ancient hero who downloads the TCMS logs for the list of coaches sent to it.
-    Using mad python Kung Fu style object programming, together we can overcome the horror that is TCMS!
+    Class TCMSMan aka the velociraptor of downloads, will sort after the infamous TCMS logs in record time.
+    Using wild Jurasic python object programming, together we can overcome the pain that is TCMS!
 
     Author:     Ben McGuffog, Fleet Support Engineer
     Version:    2020-Dec
@@ -36,7 +36,6 @@ class TCMSMan:
     def getCPGAddress(self, coach):
         """
         Returns the CPG dictionary item for the argument coach.
-        Will default to home 127.0.0.1 for case None.
         Will cast int arguments to strings.
         :param coach:
         :return self.cpgdict.get(coach):
@@ -48,7 +47,7 @@ class TCMSMan:
 
     def getLogs(self, coach):
         """
-        Automatically downloads the log files from the remote /var/opt/logs folder.
+        Automatically downloads the log files from the TCMS HMI.
         Utilises the ssh port 22 protocols.
         :param coach:
         :return none:
@@ -65,7 +64,7 @@ class TCMSMan:
                       '/home/traintic/etc/HMIAlarms.xml',
                       '/var/traintic/log/AlarmReg00']
 
-        # Attempt a scp connection to the host and get the logs for coach
+        # Attempt an scp connection to the host and get the logs for TCMS
         for TCMS_File in TCMS_Files:
             try:
                 client.connect(host, port, username, password)
@@ -78,7 +77,7 @@ class TCMSMan:
                 scp.close()
             except paramiko.ssh_exception.NoValidConnectionsError:
                 print("Failed connection to " + str(coach))
-                TCMSMan.writeToLogfile("Failed connection to " + str(coach))
+                TCMSMan.writeToLogfile("paramiko.ssh_exception occurred for " + str(coach))
 
     def getRake(self, coaches):
         """
@@ -89,13 +88,13 @@ class TCMSMan:
         for coach in coaches:
             self.getLogs(coach)
 
-    def makeCoachList(self, coaches):
+    def makeCoachList(self):
         """
         Creates a list of coaches from the CPS list that are currently reachable.
-        :param coaches:
         :return none:
         """
-        coaches.clear()
+        global coachList
+        coachList.clear()
         print("""
 
         ........................................................................................................  
@@ -109,14 +108,14 @@ class TCMSMan:
         """)
         for coach in tqdm(self.cpgdict.keys()):
             if self.isCoachReachable(coach, self.getCPGAddress(coach)):
-                coaches.append(coach)
+                coachList.append(coach)
                 TCMSMan.writeToLogfile("Downloaded: " + str(coach) + " at: " + str(self.getCPGAddress(coach)))
 
     @staticmethod
     def makeLogDir(coach):
         """
-        Attempts to make a directory for the current download session.
-        Returns the new folder as a string is successful, else returns None.
+        Attempts to make a local directory for the current download session.
+        Returns the new folder as a string if successful, else returns None.
         :param coach:
         :return none:
         """
@@ -143,7 +142,7 @@ class TCMSMan:
         if response:
             TCMSMan.writeToLogfile(str(coachNumber) + " contact confirmed at " + str(coachIP))
         else:
-            TCMSMan.writeToLogfile(str(coachNumber) + " unreachable at " + str(coachIP))
+            print(str(coachNumber) + " unreachable at " + str(coachIP))
         return response
 
     @staticmethod
@@ -177,12 +176,12 @@ def main():
     """
     Instantiates a class object of type TCMSMan and makes a list of ping-able coaches.
     Using this list, each coach is then sent an SCP protocol to download the logs from the
-    root@COACH_IP_ADDRESS:/var/opt/logs folder and save them to the local machine.
-    :return:
+    the respective TCMS file locations and save them to the local machine.
+    :return None:
     """
     global coachList
     getRakeLogs = TCMSMan()
-    getRakeLogs.makeCoachList(coachList)
+    getRakeLogs.makeCoachList()
     if coachList:
         print('Search complete. Found: ' + ', '.join(coachList))
         getRakeLogs.getRake(coachList)
