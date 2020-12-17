@@ -141,8 +141,6 @@ class TCMSMan:
         response = not subprocess.call('ping -n 1 -w 100 ' + str(coachIP), stdout=subprocess.PIPE)
         if response:
             TCMSMan.writeToLogfile(str(coachNumber) + " contact confirmed at " + str(coachIP))
-        else:
-            print(str(coachNumber) + " unreachable at " + str(coachIP))
         return response
 
     @staticmethod
