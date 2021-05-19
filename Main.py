@@ -10,7 +10,7 @@ import subprocess
 import socket
 
 path = ''
-coachList = []
+global_coach_list = []
 
 
 class TCMSMan:
@@ -97,8 +97,8 @@ class TCMSMan:
         Creates a list of coaches from the CPS list that are currently reachable.
         :return none:
         """
-        global coachList
-        coachList.clear()
+        global global_coach_list
+        global_coach_list.clear()
         print("""
 
         ........................................................................................................  
@@ -112,9 +112,13 @@ class TCMSMan:
         """)
         for coach in tqdm(self.cpg_dict.keys()):
             if self.is_coach_reachable(coach, self.get_CPG_address(coach)):
-                coachList.append(coach)
+                global_coach_list.append(coach)
                 TCMSMan.write_to_log_file("Downloaded: " + str(coach) + " at: " + str(self.get_CPG_address(coach)))
         
+    def global_coach_list_is_good(self):
+        for coach_id in global_coach_list:
+            pass
+
     @staticmethod
     def make_log_dir(coach):
         """
@@ -181,12 +185,12 @@ def main():
     the respective TCMS file locations and save them to the local machine.
     :return None:
     """
-    global coachList
+    global global_coach_list
     getRakeLogs = TCMSMan()
     getRakeLogs.make_list_of_coaches()
-    if coachList:
-        print('Search complete. Found: ' + ', '.join(coachList))
-        getRakeLogs.get_rake_ids(coachList)
+    if global_coach_list:
+        print('Search complete. Found: ' + ', '.join(global_coach_list))
+        getRakeLogs.get_rake_ids(global_coach_list)
         print("""
 
 
@@ -217,7 +221,7 @@ def main():
               Author: Ben McGuffog, Support Engineer
 
         """)
-        print('****** Logs gathered for: ' + ', '.join(coachList))
+        print('****** Logs gathered for: ' + ', '.join(global_coach_list))
     else:
         print("""
 
