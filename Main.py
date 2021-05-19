@@ -115,8 +115,9 @@ class TCMSMan:
                 global_coach_list.append(coach)
                 TCMSMan.write_to_log_file("Downloaded: " + str(coach) + " at: " + str(self.get_CPG_address(coach)))
         
-    def global_coach_list_is_good(self):
-        for coach_id in global_coach_list:
+    def local_IP_address_is_good(self):
+        local_ip = self.get_local_IP()
+        for ip_address in self.cpg_dict.values():
             pass
 
     @staticmethod
