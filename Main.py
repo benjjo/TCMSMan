@@ -7,6 +7,7 @@ import time
 import datetime
 from tqdm import tqdm
 import subprocess
+import socket
 
 path = ''
 coachList = []
@@ -23,7 +24,7 @@ class TCMSMan:
     """
 
     def __init__(self):
-        self.cpgdict = {
+        self.cpg_dict = {
             # SEATED
             "15001": "10.128.33.1", "15002": "10.128.34.1", "15003": "10.128.35.1",
             "15004": "10.128.36.1", "15005": "10.128.37.1", "15006": "10.128.38.1",
@@ -33,19 +34,22 @@ class TCMSMan:
             # "pi": "172.24.22.246",
         }
 
-    def getCPGAddress(self, coach):
+    def get_CPG_address(self, coach):
         """
         Returns the CPG dictionary item for the argument coach.
         Will cast int arguments to strings.
         :param coach:
-        :return self.cpgdict.get(coach):
+        :return self.cpg_dict.get(coach):
         """
         if type(coach) is int:
             coach = str(coach)
 
-        return self.cpgdict.get(coach)
+        return self.cpg_dict.get(coach)
 
-    def getLogs(self, coach):
+    def get_local_IP(self):
+        return socket.gethostbyname(socket.gethostname())
+
+    def get_logs(self, coach):
         """
         Automatically downloads the log files from the TCMS HMI.
         Utilises the ssh port 22 protocols.
@@ -55,7 +59,7 @@ class TCMSMan:
         global path
         username = 'ftp_guest'
         password = 'ftpguest'
-        host = self.getCPGAddress(coach)
+        host = self.get_CPG_address(coach)
         port = 22
         client = SSHClient()
         client.load_system_host_keys()
@@ -68,7 +72,7 @@ class TCMSMan:
         for TCMS_File in TCMS_Files:
             try:
                 client.connect(host, port, username, password)
-                self.makeLogDir(coach)
+                self.make_log_dir(coach)
                 # This is a little bit of a hack. SCPClient doesn't allow you to pass a wild
                 # character to the string, it just sees it as a literal character.
                 # Sanitize gets around this with lambda magic.
@@ -77,18 +81,18 @@ class TCMSMan:
                 scp.close()
             except paramiko.ssh_exception.NoValidConnectionsError:
                 print("Failed connection to " + str(coach))
-                TCMSMan.writeToLogfile("paramiko.ssh_exception occurred for " + str(coach))
+                TCMSMan.write_to_log_file("paramiko.ssh_exception occurred for " + str(coach))
 
-    def getRake(self, coaches):
+    def get_rake_ids(self, coaches):
         """
         Iterates through a list of coaches and calls the getLogs for each.
         :param coaches:
         :return none:
         """
         for coach in coaches:
-            self.getLogs(coach)
+            self.get_logs(coach)
 
-    def makeCoachList(self):
+    def make_list_of_coaches(self):
         """
         Creates a list of coaches from the CPS list that are currently reachable.
         :return none:
@@ -106,13 +110,13 @@ class TCMSMan:
         ........................................................................................................  
 
         """)
-        for coach in tqdm(self.cpgdict.keys()):
-            if self.isCoachReachable(coach, self.getCPGAddress(coach)):
+        for coach in tqdm(self.cpg_dict.keys()):
+            if self.is_coach_reachable(coach, self.get_CPG_address(coach)):
                 coachList.append(coach)
-                TCMSMan.writeToLogfile("Downloaded: " + str(coach) + " at: " + str(self.getCPGAddress(coach)))
-
+                TCMSMan.write_to_log_file("Downloaded: " + str(coach) + " at: " + str(self.get_CPG_address(coach)))
+        
     @staticmethod
-    def makeLogDir(coach):
+    def make_log_dir(coach):
         """
         Attempts to make a local directory for the current download session.
         Returns the new folder as a string if successful, else returns None.
@@ -125,34 +129,34 @@ class TCMSMan:
             os.makedirs(path, exist_ok=True)
         except OSError:
             print('Creation of the directory %s has failed' % path)
-            TCMSMan.writeToLogfile('Creation of the directory %s has failed' % path)
+            TCMSMan.write_to_log_file('Creation of the directory %s has failed' % path)
         else:
             print('Successfully uploaded logs to %s ' % path)
-            TCMSMan.writeToLogfile('Successfully uploaded logs to %s ' % path)
+            TCMSMan.write_to_log_file('Successfully uploaded logs to %s ' % path)
 
     @staticmethod
-    def isCoachReachable(coachNumber, coachIP):
+    def is_coach_reachable(coach_number, coach_IP):
         """
         Returns true if coach is currently reachable.
         :param coachNumber:
         :param coachIP:
         :return boolean:
         """
-        response = not subprocess.call('ping -n 1 -w 100 ' + str(coachIP), stdout=subprocess.PIPE)
+        response = not subprocess.call('ping -n 1 -w 100 ' + str(coach_IP), stdout=subprocess.PIPE)
         if response:
-            TCMSMan.writeToLogfile(str(coachNumber) + " contact confirmed at " + str(coachIP))
+            TCMSMan.write_to_log_file(str(coach_number) + " contact confirmed at " + str(coach_IP))
         return response
 
     @staticmethod
-    def writeToLogfile(logString):
+    def write_to_log_file(log_name):
         """
         Writes to a logfile named TCMSMan_logfile.txt.
-        :param logString:
+        :param log_name:
         :return none:
         """
         try:
             f = open("TCMSMan_logfile.txt", "a")
-            f.write(str(datetime.datetime.utcnow().strftime("%b%d-%H:%M:%S.%f")[:-4]) + " " + logString + "\n")
+            f.write(str(datetime.datetime.utcnow().strftime("%b%d-%H:%M:%S.%f")[:-4]) + " " + log_name + "\n")
             f.close()
         except OSError:
             print("Failed to write to TCMSMan_logfile.txt")
@@ -179,10 +183,10 @@ def main():
     """
     global coachList
     getRakeLogs = TCMSMan()
-    getRakeLogs.makeCoachList()
+    getRakeLogs.make_list_of_coaches()
     if coachList:
         print('Search complete. Found: ' + ', '.join(coachList))
-        getRakeLogs.getRake(coachList)
+        getRakeLogs.get_rake_ids(coachList)
         print("""
 
 
@@ -209,7 +213,7 @@ def main():
                     ────────────██────█
                     ────────────█─────█
                     ────────────██────██
-                TCMS Man Version 1.0 Raptor Distro 
+                TCMS Man Version 2.0 Raptor Distro 
               Author: Ben McGuffog, Support Engineer
 
         """)
