@@ -115,10 +115,17 @@ class TCMSMan:
                 global_coach_list.append(coach)
                 TCMSMan.write_to_log_file("Downloaded: " + str(coach) + " at: " + str(self.get_CPG_address(coach)))
         
+        if not self.local_IP_address_is_good():
+            print(ASCII.devil())
+            input('Your laptop IP address is [' + self.get_local_IP() + '] Press ENTER key to exit')
+            exit()
+
     def local_IP_address_is_good(self):
         local_ip = self.get_local_IP()
         for ip_address in self.cpg_dict.values():
-            pass
+            if local_ip[:9] in ip_address:
+                return True
+        return False
 
     @staticmethod
     def make_log_dir(coach):
@@ -178,21 +185,10 @@ class TCMSMan:
         """
         sys.stdout.write("%s\'s progress: %.2f%%   \r" % (filename, float(sent) / float(size) * 100))
 
-
-def main():
-    """
-    Instantiates a class object of type TCMSMan and makes a list of ping-able coaches.
-    Using this list, each coach is then sent an SCP protocol to download the logs from the
-    the respective TCMS file locations and save them to the local machine.
-    :return None:
-    """
-    global global_coach_list
-    getRakeLogs = TCMSMan()
-    getRakeLogs.make_list_of_coaches()
-    if global_coach_list:
-        print('Search complete. Found: ' + ', '.join(global_coach_list))
-        getRakeLogs.get_rake_ids(global_coach_list)
-        print("""
+class ASCII:
+    @classmethod
+    def dino(cls):
+        dino_splash = """
 
 
 
@@ -218,13 +214,15 @@ def main():
                     ────────────██────█
                     ────────────█─────█
                     ────────────██────██
-                TCMS Man Version 2.0 Raptor Distro 
+                TCMS Man Version 3.0 Raptor Distro 
               Author: Ben McGuffog, Support Engineer
 
-        """)
-        print('****** Logs gathered for: ' + ', '.join(global_coach_list))
-    else:
-        print("""
+        """
+        return dino_splash
+
+    @classmethod
+    def devil(cls):
+        devil_splash = """
 
 
 
@@ -256,7 +254,28 @@ def main():
         Try setting your IP address to 10.128.33.10, mask 255.224.0.0
         Try setting you IP address to automatic. 
 
-        """)
+        """
+
+        return devil_splash
+
+
+def main():
+    """
+    Instantiates a class object of type TCMSMan and makes a list of ping-able coaches.
+    Using this list, each coach is then sent an SCP protocol to download the logs from the
+    the respective TCMS file locations and save them to the local machine.
+    :return None:
+    """
+    global global_coach_list
+    getRakeLogs = TCMSMan()
+    getRakeLogs.make_list_of_coaches()
+    if global_coach_list:
+        print('Search complete. Found: ' + ', '.join(global_coach_list))
+        getRakeLogs.get_rake_ids(global_coach_list)
+        print(ASCII.dino())
+        print('****** Logs gathered for: ' + ', '.join(global_coach_list))
+    else:
+        print(ASCII.devil())
 
     input("Press ENTER key to exit")
 
