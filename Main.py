@@ -123,9 +123,10 @@ class TCMSMan:
 
     def local_IP_address_is_good(self):
         local_ip_list = self.get_local_IP_list()
-        for ip_address in self.cpg_dict.values():
-            if ip_address[:9] in local_ip_list:
-                return True
+        for local_ip in local_ip_list:
+            for ip_address in self.cpg_dict.values():
+                if ip_address[:9] in local_ip:
+                    return True
         return False
 
     @staticmethod
