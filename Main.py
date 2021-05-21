@@ -46,8 +46,8 @@ class TCMSMan:
 
         return self.cpg_dict.get(coach)
 
-    def get_local_IP(self):
-        return socket.gethostbyname(socket.gethostname())
+    def get_local_IP_list(self):
+        return socket.gethostbyname_ex(socket.gethostname())[2]
 
     def get_logs(self, coach):
         """
@@ -117,13 +117,14 @@ class TCMSMan:
         
         if not self.local_IP_address_is_good():
             print(ASCII.devil())
-            input('Your laptop IP address is [' + self.get_local_IP() + '] Press ENTER key to exit')
+            print("Your IP laptop address should start with 10.128.X.X")
+            input('Your laptop IP addresses are ' + str(self.get_local_IP_list()) + ' Press ENTER key to exit')
             exit()
 
     def local_IP_address_is_good(self):
-        local_ip = self.get_local_IP()
+        local_ip_list = self.get_local_IP_list()
         for ip_address in self.cpg_dict.values():
-            if local_ip[:9] in ip_address:
+            if ip_address[:9] in local_ip_list:
                 return True
         return False
 
@@ -214,7 +215,7 @@ class ASCII:
                     ────────────██────█
                     ────────────█─────█
                     ────────────██────██
-                TCMS Man Version 3.0 Raptor Distro 
+                TCMS Man Version 3.1 Raptor Distro 
               Author: Ben McGuffog, Support Engineer
 
         """
@@ -223,6 +224,7 @@ class ASCII:
     @classmethod
     def devil(cls):
         devil_splash = """
+
 
 
 
