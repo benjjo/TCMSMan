@@ -30,8 +30,6 @@ class TCMSMan:
             "15004": "10.128.36.1", "15005": "10.128.37.1", "15006": "10.128.38.1",
             "15007": "10.128.39.1", "15008": "10.128.40.1", "15009": "10.128.41.1",
             "15010": "10.128.42.1", "15011": "10.128.43.1",
-            # TEST
-            # "pi": "172.24.22.246",
         }
 
     def get_CPG_address(self, coach):
@@ -46,7 +44,8 @@ class TCMSMan:
 
         return self.cpg_dict.get(coach)
 
-    def get_local_IP_list(self):
+    @staticmethod
+    def get_local_IP_list():
         return socket.gethostbyname_ex(socket.gethostname())[2]
 
     def get_logs(self, coach):
@@ -149,16 +148,16 @@ class TCMSMan:
             TCMSMan.write_to_log_file('Successfully uploaded logs to %s ' % path)
 
     @staticmethod
-    def is_coach_reachable(coach_number, coach_IP):
+    def is_coach_reachable(coach_number, coach_ip):
         """
         Returns true if coach is currently reachable.
-        :param coachNumber:
-        :param coachIP:
+        :param coach_number:
+        :param coach_ip:
         :return boolean:
         """
-        response = not subprocess.call('ping -n 1 -w 100 ' + str(coach_IP), stdout=subprocess.PIPE)
+        response = not subprocess.call('ping -n 1 -w 100 ' + str(coach_ip), stdout=subprocess.PIPE)
         if response:
-            TCMSMan.write_to_log_file(str(coach_number) + " contact confirmed at " + str(coach_IP))
+            TCMSMan.write_to_log_file(str(coach_number) + " contact confirmed at " + str(coach_ip))
         return response
 
     @staticmethod
@@ -186,6 +185,7 @@ class TCMSMan:
         :return none:
         """
         sys.stdout.write("%s\'s progress: %.2f%%   \r" % (filename, float(sent) / float(size) * 100))
+
 
 class ASCII:
     @classmethod
@@ -216,7 +216,7 @@ class ASCII:
                     ────────────██────█
                     ────────────█─────█
                     ────────────██────██
-                TCMS Man Version 3.1 Raptor Distro 
+                TCMS Man Version 3.2 Raptor Distro 
               Author: Ben McGuffog, Support Engineer
 
         """
