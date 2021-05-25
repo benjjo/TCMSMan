@@ -16,7 +16,7 @@ global_coach_list = []
 class TCMSMan:
     """
     Class TCMSMan aka the velociraptor of downloads, will sort after the infamous TCMS logs in record time.
-    Using wild Jurasic python object programming, together we can overcome the pain that is TCMS!
+    Using wild Jurassic python object programming, together we can overcome the pain that is TCMS!
 
     Author:     Ben McGuffog, Fleet Support Engineer
     Version:    2020-Dec
